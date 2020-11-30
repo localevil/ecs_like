@@ -1,5 +1,4 @@
 #pragma once
-#include <SDL2/SDL.h>
 #include "Components/position_component.h"
 
 typedef struct game_object {

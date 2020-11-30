@@ -1,8 +1,9 @@
 #include "ai_system.h"
 #include <stdlib.h>
-#include "Components/position_component.h"
 #include <stdint.h>
 #include <time.h>
+
+#include "Components/position_component.h"
 
 static void ai_func(void *elm)
 {

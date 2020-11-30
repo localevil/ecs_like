@@ -1,34 +1,42 @@
 #include "moving_system.h"
 #include <SDL2/SDL.h>
 
+#include "Components/position_component.h"
+
+const uint8_t *keys;
+
 static void moving_func(void *elm) {
 	static uint32_t moving_last_time = 0;
 	uint32_t current_time = SDL_GetTicks();
 	if (current_time > moving_last_time + 15)
 	{
-		moving_struct_t *move = (moving_struct_t *)elm;
-		if (move->elm)
+		position_comp_t *pos = (position_comp_t *)elm;
+		if (pos)
 		{
-			position_comp_t *p = move->elm;
-			if (move->keys[SDL_SCANCODE_LEFT] || move->keys[SDL_SCANCODE_A])
+			if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A])
 			{
-				p->x--;
+				pos->x--;
 			}
-			if (move->keys[SDL_SCANCODE_RIGHT] || move->keys[SDL_SCANCODE_D])
+			if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D])
 			{
-				p->x++;
+				pos->x++;
 			}
-			if (move->keys[SDL_SCANCODE_UP] || move->keys[SDL_SCANCODE_W])
+			if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W])
 			{
-				p->y--;
+				pos->y--;
 			}
-			if (move->keys[SDL_SCANCODE_DOWN] || move->keys[SDL_SCANCODE_S])
+			if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S])
 			{
-				p->y++;
+				pos->y++;
 			}
 			moving_last_time = current_time;
 		}
 	}
+}
+
+void init_moving_sustem()
+{
+	keys = SDL_GetKeyboardState(NULL);
 }
 
 void moving_system(list_t *moving_list)
