@@ -1,76 +1,84 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <SDL2/SDL.h>
 #include <stdbool.h>
+
 #include "List/list.h"
+
 #include "Systems/ai_system.h"
 #include "Systems/drawing_system.h"
 #include "Systems/collision_system.h"
 #include "Systems/moving_system.h"
-#include "Entitys/game_object.h"
+#include "Systems/event_system.h"
+
+#include "Entitys/entity.h"
 
 int main()
 {
-	game_object_t player;
-	player.position.x = 0;
-	player.position.y = 0;
+	if(init_drawing_system(640, 480))
+	{
+		printf("drawing system has been created");
+	}
 
-	game_object_t enemy;
-	enemy.position.x = 630 / 2;
-	enemy.position.y = 470 / 2;
+	init_moving_sustem();
 
-	SDL_Init(SDL_INIT_VIDEO);
-	SDL_Window* win;
-	SDL_Renderer* ren;
-	SDL_CreateWindowAndRenderer(640, 480, 0, &win, &ren);
+	component player_position_comp;
+	player_position_comp.type = COMP_TYPE_POS;
+	player_position_comp.pos_comp.pos.x = 0;
+	player_position_comp.pos_comp.pos.y = 0;
+	player_position_comp.pos_comp.size.x = 10;
+	player_position_comp.pos_comp.size.y = 10;
 
-	const uint8_t *keys = SDL_GetKeyboardState(NULL);
+//	component player_texture_comp;
+//	player_position_comp.type = TEXTURE_COMP;
+//	player_position_comp.texture_comp = texture_comp_create("characters.png", 32, 32);
+
+	component enemy_position_comp;
+	enemy_position_comp.type = COMP_TYPE_POS;
+	enemy_position_comp.pos_comp.pos.x = 630 / 2;
+	enemy_position_comp.pos_comp.pos.y = 470 / 2;
+	enemy_position_comp.pos_comp.size.x = 10;
+	enemy_position_comp.pos_comp.size.y = 10;
+//	game_object_t enemy;
+//	enemy.components = l_create();
+//	l_push(enemy.components, (void *) &enemy_position_comp);
 
 	list_t* drawing = l_create();
 	list_t* moving = l_create();
 	list_t* ai = l_create();
-	position_comp_t* collision[10] = {0};
+	component* collision[10] = {0};
 
-	draw_struct_t player_drawing = {ren, &player.position};
-	draw_struct_t enemy_drawing = {ren, &enemy.position};
-	l_push(drawing,(void *)&player_drawing);
-	l_push(drawing,(void *)&enemy_drawing);
+	l_push(drawing,(void *)&player_position_comp);
+	l_push(drawing,(void *)&enemy_position_comp);
 
-	moving_struct_t moving_player = {keys, &player.position};
-	l_push(moving, (void *) &moving_player);
+	l_push(moving, (void *) &player_position_comp);
 
-	l_push(ai,(void *)&enemy.position);
+//	l_push(ai,(void *)&enemy_position_comp.pos_comp);
 
-	collision[0] = &player.position;
-	collision[1] = &enemy.position;
+	collision[0] = &player_position_comp;
+	collision[1] = &enemy_position_comp;
 
-	bool running = true;
-	uint32_t drawing_last_time = 0, ai_last_time = 0;
-	while(running){
-		static SDL_Event event;
-		while(SDL_PollEvent(&event))
-		{
-			switch (event.type) {
-			case SDL_QUIT:
-				running = false;
-				break;
-			}
+	uint32_t prev_time = 0;
+	while(1){
+		uint32_t current_time;
+		if(event_system(&current_time)) {
+			break;
 		}
+
+//		ai_system(ai);
+		collision_system(collision);
+
 		moving_system(moving);
-		uint32_t current_time = SDL_GetTicks();
-		if (current_time > ai_last_time + 15)
+		if (current_time - prev_time > 15)
 		{
-			ai_system(ai);
-			ai_last_time = current_time;
+			drawing_system_process(drawing);
+			prev_time = current_time;
 		}
 
-		if (current_time > drawing_last_time + 16)
-		{
-			collision_system(collision);
-			drawing_system(drawing, ren);
-			drawing_last_time = current_time;
-		}
 	}
-	SDL_DestroyRenderer(ren);
-	SDL_DestroyWindow(win);
+	l_delete(drawing);
+	l_delete(ai);
+	l_delete(moving);
+	destroy_drawing_system();
+
+	return 0;
 }

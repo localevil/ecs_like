@@ -1,4 +1,9 @@
 #pragma once
-#include "Vector2D/vector2d.h"
+#include "Vector2D/vector2f.h"
+#include "stdbool.h"
 
-typedef vector2d_t position_comp_t;
+typedef struct {
+	vector2f pos;
+	vector2f size;
+	bool on_floor;
+}position_comp_t;

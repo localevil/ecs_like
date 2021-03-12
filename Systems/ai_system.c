@@ -1,8 +1,9 @@
 #include "ai_system.h"
 #include <stdlib.h>
-#include "Components/position_component.h"
 #include <stdint.h>
 #include <time.h>
+
+#include "Components/position_component.h"
 
 static void ai_func(void *elm)
 {
@@ -11,10 +12,10 @@ static void ai_func(void *elm)
 	uint32_t duration_x = rand() % 3 - 1;
 	uint32_t duration_y = rand() % 3 - 1;
 	//todo drawing compoment with width and height
-	if (p->x + duration_x > 0 && p->x + 10 + duration_x < 640)
-		p->x += duration_x;
-	if (p->y + duration_y > 0 && p->y + 10 + duration_y < 480)
-		p->y += duration_y;
+	if (p->pos.x + duration_x > 0 && p->pos.x + 10 + duration_x < 640)
+		p->pos.x += duration_x;
+	if (p->pos.y + duration_y > 0 && p->pos.y + 10 + duration_y < 480)
+		p->pos.y += duration_y;
 }
 
 void ai_system(list_t *ai_list)

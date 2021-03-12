@@ -1,4 +1,4 @@
 #pragma once
-#include "Components/position_component.h"
+#include "Components/component.h"
 
-void collision_system(position_comp_t **arr);
+void collision_system(component **arr);
