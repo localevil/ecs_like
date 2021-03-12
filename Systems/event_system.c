@@ -7,7 +7,6 @@ int8_t event_system(uint32_t *current_time) {
 		switch (event.type) {
 		case SDL_QUIT:
 			return 1;
-			break;
 		}
 	}
 	*current_time = SDL_GetTicks();

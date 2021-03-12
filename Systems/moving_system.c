@@ -1,7 +1,7 @@
 #include "moving_system.h"
 #include <SDL2/SDL.h>
 
-#include "Components/position_component.h"
+#include "Components/component.h"
 
 const uint8_t *keys;
 
@@ -10,24 +10,24 @@ static void moving_func(void *elm) {
 	uint32_t current_time = SDL_GetTicks();
 	if (current_time > moving_last_time + 15)
 	{
-		position_comp_t *pos = (position_comp_t *)elm;
-		if (pos)
+		component *pos = (component *)elm;
+		if (pos != NULL && pos->type == COMP_TYPE_POS)
 		{
 			if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A])
 			{
-				pos->x--;
+				pos->pos_comp.pos.x--;
 			}
 			if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D])
 			{
-				pos->x++;
+				pos->pos_comp.pos.x++;
 			}
 			if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W])
 			{
-				pos->y--;
+				pos->pos_comp.pos.y--;
 			}
 			if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S])
 			{
-				pos->y++;
+				pos->pos_comp.pos.y++;
 			}
 			moving_last_time = current_time;
 		}
