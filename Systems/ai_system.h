@@ -1,5 +1,10 @@
 #pragma once
-#include "List/list.h"
 
-void ai_system(list_t *ai_list);
-bool ai_compare(void *data1, void *data2);
+#include <stdint.h>
+
+#include <Entitys/entity.h>
+
+void ai_system(float delta);
+void ai_sys_add_item(entity *en);
+uint32_t init_ai_sustem();
+void destroy_ai_system();

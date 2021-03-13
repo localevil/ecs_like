@@ -9,6 +9,8 @@ void l_delete(list_t *l);
 
 void l_push(list_t *l, void *data);
 
+void *l_find(list_t *l, bool (*f_find)(void *data));
+
 void l_for_each(list_t *l, void (*f_do)(void *data));
 
 bool l_node_delete(list_t *l, void* s_data,

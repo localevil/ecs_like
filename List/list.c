@@ -1,5 +1,6 @@
 #include "list.h"
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct node
 {
@@ -67,6 +68,18 @@ bool l_node_delete(list_t *l, void* s_data,
 		current = current->next;
 	}
 	return false;
+}
+
+void *l_find(list_t *l, bool (*f_find)(void *data)) {
+	_node_t *current = l->head;
+	while (current)
+	{
+		if (f_find(current->value)) {
+			return current->value;
+		}
+		current = current->next;
+	}
+	return NULL;
 }
 
 void l_for_each(list_t *l, void (*f_do)(void *data))

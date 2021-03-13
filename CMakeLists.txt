@@ -26,6 +26,7 @@ set(HDR
 
 	Components/position_component.h
 	Components/texture_component.h
+	Components/physics_component.h
 	Components/component.h
 	)
 
