@@ -2,7 +2,6 @@
 
 typedef struct list list_t;
 
-
 list_t *l_create();
 //data in nodes free user
 void l_delete(list_t *l);

@@ -38,10 +38,17 @@ static void moving_func(void *elm) {
 		{
 			duration.y += 1;
 		}
+
+		vec2f norm_dur = vec2f_normalize(duration);
+		if(norm_dur.x < 0)
+			node->pos_comp->flip = true;
+		else if (norm_dur.x > 0)
+			node->pos_comp->flip = false;
+
 		node->pos_comp->center = vec2f_add(
 									vec2f_multiply_scalar(
 										vec2f_multiply(
-											vec2f_normalize(duration),
+											norm_dur,
 											node->physics_comp->speed),
 										move_sys.delta),
 									node->pos_comp->center);

@@ -13,9 +13,15 @@ typedef struct {
 }drawing_node;
 
 typedef struct {
+	const char *path;
+	SDL_Texture *texture;
+} texture_node;
+
+typedef struct {
    SDL_Renderer *ren;
    SDL_Window *win;
    list_t *items;
+   list_t *textures;
 } drawing_system_t;
 
 static drawing_system_t draw_sys;
@@ -39,11 +45,16 @@ static void drawing_func(void *elm) {
 		SDL_Rect texture_rect;
 		texture_rect.x = node->texture_comp->pos.x;
 		texture_rect.y = node->texture_comp->pos.y;
-		//todo drawing component
 		texture_rect.w = node->texture_comp->texture_size.x;
 		texture_rect.h = node->texture_comp->texture_size.y;
 
-		SDL_RenderCopy(draw_sys.ren, (SDL_Texture*)node->texture_comp->texture, &texture_rect, &draw_rect);
+		SDL_RendererFlip flip = SDL_FLIP_NONE;
+		if(node->pos_comp->flip) {
+			flip = SDL_FLIP_HORIZONTAL;
+		}
+		SDL_RenderCopyEx(draw_sys.ren,
+						 (SDL_Texture*)node->texture_comp->texture,
+						 &texture_rect, &draw_rect, 0., NULL, flip);
 	}
 }
 
@@ -55,13 +66,28 @@ void drawing_system() {
 	SDL_RenderPresent(draw_sys.ren);
 }
 
+static const char* _path;
+
+static bool find_texture(void *data) {
+	texture_node *text_node = (texture_node*)data;
+	return text_node && !strcmp(text_node->path, _path);
+}
+
 void* drawing_sys_add_texture(const char *path) {
-	SDL_Texture *texture = IMG_LoadTexture(draw_sys.ren, path);
-	if (!texture) {
-		printf("Texture: %s not loaded\n", path);
-		return NULL;
+	_path = path;
+	texture_node* node = (texture_node*) l_find(draw_sys.textures, find_texture);
+	if (!node) {
+		SDL_Texture *texture = IMG_LoadTexture(draw_sys.ren, path);
+		if (!texture) {
+			printf("Texture: %s not loaded\n", path);
+			return NULL;
+		}
+		node = (texture_node*)malloc(sizeof(texture_node));
+		node->path = path;
+		node->texture = texture;
+		l_push(draw_sys.textures, (void*)node);
 	}
-	return (void*) texture;
+	return (void*) node->texture;
 }
 
 uint32_t init_drawing_system(uint32_t w, uint32_t h) {
@@ -79,6 +105,7 @@ uint32_t init_drawing_system(uint32_t w, uint32_t h) {
 	}
 
 	draw_sys.items = l_create();
+	draw_sys.textures = l_create();
 	return 0;
 }
 
@@ -109,11 +136,20 @@ void drawing_sys_add_item(entity *en) {
 }
 
 static void delete_items(void *elm) {
-	if(elm) free(elm);
+	if(elm) {
+		texture_node* node = (texture_node*)elm;
+		SDL_DestroyTexture(node->texture);
+		free(node);
+	}
+}
+
+static void delete_textures(void *elm) {
+	if(elm) SDL_DestroyTexture(elm);
 }
 
 void destroy_drawing_system() {
 	l_for_each(draw_sys.items, delete_items);
+	l_for_each(draw_sys.textures, delete_textures);
 	free(draw_sys.items);
 	SDL_DestroyRenderer(draw_sys.ren);
 	SDL_DestroyWindow(draw_sys.win);

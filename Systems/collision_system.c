@@ -59,9 +59,9 @@ vec2f collision_depth(collision_node *n1, vec2f d1,
 }
 
 void collision_system() {
-	for (uint32_t i = 0; i < collision_sys.size / 2; i++) {
-		for (uint32_t j = collision_sys.size - 1;
-			j >= collision_sys.size / 2; j--) {
+	for (uint32_t i = 0; i < collision_sys.size; i++) {
+		for (uint32_t j = i + 1;
+			j < collision_sys.size ; j++) {
 
 			collision_node *first = &collision_sys.items[i];
 			collision_node *second = &collision_sys.items[j];

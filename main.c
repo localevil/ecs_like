@@ -33,101 +33,89 @@ void destroy_systems() {
 int main() {
 	init_systems();
 
-	entity player;
-	player.name = "Player";
-	player.components = l_create();
+	entity player = { .name = "Player", .components = l_create()};
 
-	component player_position_comp;
-	player_position_comp.type = COMP_TYPE_POS;
-	player_position_comp.pos_comp.center.x = 0;
-	player_position_comp.pos_comp.center.y = 0;
-
+	component player_position_comp = {
+		.type = COMP_TYPE_POS,
+		.pos_comp = { .center = {.x = 0, .y = 0 }}
+	};
 	l_push(player.components, (void*)&player_position_comp);
 
-	component player_physics_comp;
-	player_physics_comp.type = COMP_TYPE_PHYSICS;
-	player_physics_comp.physics_comp.type = PHYSIC_TYPE_DYNAMIC;
-	player_physics_comp.physics_comp.speed.x = 100;
-	player_physics_comp.physics_comp.speed.y = 100;
-	player_physics_comp.physics_comp.halfSize.x = 16;
-	player_physics_comp.physics_comp.halfSize.y = 24;
-
+	component player_physics_comp = {
+		.type = COMP_TYPE_PHYSICS,
+		.physics_comp = {
+			.type = PHYSIC_TYPE_DYNAMIC,
+			.speed = {.x = 100, .y = 100 },
+			.halfSize = {.x = 16, .y = 24}
+		}
+	};
 	l_push(player.components, (void*)&player_physics_comp);
 
-	void *texture = drawing_sys_add_texture("characters.png");
-
-	component player_texture_comp;
-	player_texture_comp.type = COMP_TYPE_TEXTURE;
-	player_texture_comp.texture_comp.texture = texture;
-	player_texture_comp.texture_comp.pos.x = 0;
-	player_texture_comp.texture_comp.pos.y = 32;
-	player_texture_comp.texture_comp.texture_size.x = 32;
-	player_texture_comp.texture_comp.texture_size.y = 32;
-	player_texture_comp.texture_comp.draw_size.x = 64;
-	player_texture_comp.texture_comp.draw_size.y = 64;
-
+	component player_texture_comp = {
+		.type = COMP_TYPE_TEXTURE,
+		.texture_comp = {
+			.texture = drawing_sys_add_texture("characters.png"),
+			.pos = { .x = 0, .y = 32 },
+			.texture_size = { .x = 32, .y = 32 },
+			.draw_size = { .x = 64, .y = 64 }
+		}
+	};
 	l_push(player.components, (void*)&player_texture_comp);
 
-	entity enemy;
-	enemy.name = "Enemy";
-	enemy.components = l_create();
+	entity enemy = { .name = "Enemy", .components = l_create() };
 
-	component enemy_position_comp;
-	enemy_position_comp.type = COMP_TYPE_POS;
-	enemy_position_comp.pos_comp.center.x = 640 / 2;
-	enemy_position_comp.pos_comp.center.y = 480 / 2;
-
+	component enemy_position_comp = {
+		.type = COMP_TYPE_POS,
+		.pos_comp = { .center = { .x = 640 / 2, .y = 480 / 2 } }
+	};
 	l_push(enemy.components, (void*)&enemy_position_comp);
 
-	component enemy_physics_comp;
-	enemy_physics_comp.type = COMP_TYPE_PHYSICS;
-	enemy_physics_comp.physics_comp.type = PHYSIC_TYPE_DYNAMIC;
-	enemy_physics_comp.physics_comp.speed.x = 0;
-	enemy_physics_comp.physics_comp.speed.y = 0;
-	enemy_physics_comp.physics_comp.halfSize.x = 16;
-	enemy_physics_comp.physics_comp.halfSize.y = 24;
-
+	component enemy_physics_comp = {
+		.type = COMP_TYPE_PHYSICS,
+		.physics_comp = {
+			.type = PHYSIC_TYPE_DYNAMIC,
+			.speed = {.x = 50, .y = 50},
+			.halfSize = {.x = 16, .y = 24 }
+		}
+	};
 	l_push(enemy.components, (void*)&enemy_physics_comp);
 
-	component enemy_texture_comp;
-	enemy_texture_comp.type = COMP_TYPE_TEXTURE;
-	enemy_texture_comp.texture_comp.texture = texture;
-	enemy_texture_comp.texture_comp.pos.x = 0;
-	enemy_texture_comp.texture_comp.pos.y = 64;
-	enemy_texture_comp.texture_comp.texture_size.x = 32;
-	enemy_texture_comp.texture_comp.texture_size.y = 32;
-	enemy_texture_comp.texture_comp.draw_size.x = 64;
-	enemy_texture_comp.texture_comp.draw_size.y = 64;
-
+	component enemy_texture_comp = {
+		.type = COMP_TYPE_TEXTURE,
+		.texture_comp = {
+			.texture = drawing_sys_add_texture("characters.png"),
+			.pos = { .x = 0, .y = 64},
+			.texture_size = { .x = 32, .y = 32 },
+			.draw_size = { .x = 64, .y = 64 }
+		}
+	};
 	l_push(enemy.components, (void*)&enemy_texture_comp);
 
-	entity wall;
-	wall.name = "Wall";
-	wall.components = l_create();
+	entity wall = { .name = "Wall", .components = l_create() };
 
-	component wall_position_comp;
-	wall_position_comp.type = COMP_TYPE_POS;
-	wall_position_comp.pos_comp.center.x = 205;
-	wall_position_comp.pos_comp.center.y = 300;
-
+	component wall_position_comp = {
+		.type = COMP_TYPE_POS,
+		.pos_comp = { .center.x = 205, .center.y = 300 }
+	};
 	l_push(wall.components, (void*)&wall_position_comp);
 
-	component wall_texture_comp;
-	wall_texture_comp.type = COMP_TYPE_TEXTURE;
-	wall_texture_comp.texture_comp.texture = NULL;
-	wall_texture_comp.texture_comp.draw_size.x = 10;
-	wall_texture_comp.texture_comp.draw_size.y = 200;
-
+	component wall_texture_comp = {
+		.type = COMP_TYPE_TEXTURE,
+		.texture_comp = {
+			.texture = NULL,
+			.draw_size = {.x = 10, .y = 200 }
+		}
+	};
 	l_push(wall.components, (void*)&wall_texture_comp);
 
-	component wall_physics_comp;
-	wall_physics_comp.type = COMP_TYPE_PHYSICS;
-	wall_physics_comp.physics_comp.type = PHYSIC_TYPE_STATIC;
-	wall_physics_comp.physics_comp.speed.x = 0;
-	wall_physics_comp.physics_comp.speed.y = 0;
-	wall_physics_comp.physics_comp.halfSize.x = 5;
-	wall_physics_comp.physics_comp.halfSize.y = 100;
-
+	component wall_physics_comp = {
+		.type = COMP_TYPE_PHYSICS,
+		.physics_comp = {
+			.type = PHYSIC_TYPE_STATIC,
+			.speed = { .x = 0, .y = 0 },
+			.halfSize = { .x = 5, .y = 100}
+		}
+	};
 	l_push(wall.components, (void*)&wall_physics_comp);
 
 	drawing_sys_add_item(&player);
