@@ -14,8 +14,6 @@ typedef struct {
 	list_t *items;
 } moving_system_t;
 
-const uint32_t speed = 100;
-
 static moving_system_t move_sys;
 
 static void moving_func(void *elm) {
@@ -82,7 +80,7 @@ void moving_sys_add_item(entity *en) {
 	}
 	type = COMP_TYPE_PHYSICS;
 	component *physics = (component*)l_find(en->components, find_comp);
-	if(!pos) {
+	if(!physics) {
 		printf("Entity %s not have physics component", en->name);
 		return;
 	}

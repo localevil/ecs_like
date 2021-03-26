@@ -109,7 +109,7 @@ void collision_system() {
 	}
 }
 
-uint32_t init_collision_sustem(uint32_t max) {
+uint32_t init_collision_system(uint32_t max) {
 	collision_sys.size = 0;
 	collision_sys.max = max;
 	collision_sys.items = calloc(collision_sys.max,sizeof (collision_node));

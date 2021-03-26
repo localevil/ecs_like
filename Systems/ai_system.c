@@ -83,7 +83,7 @@ void ai_sys_add_item(entity *en) {
 	l_push(ai_sys.items,(void *)node);
 }
 
-uint32_t init_ai_sustem() {
+uint32_t init_ai_system() {
 	ai_sys.items = l_create();
 	return 0;
 }

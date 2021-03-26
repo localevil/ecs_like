@@ -6,6 +6,7 @@ set(CMAKE_C_FLAGS "-Wall -Wextra -g")
 
 add_subdirectory(List)
 add_subdirectory(Vector2D)
+file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR})
 
 set(LIBS
 	SDL2
@@ -23,10 +24,12 @@ set(HDR
 	Systems/drawing_system.h
 	Systems/moving_system.h
 	Systems/event_system.h
+	Systems/transform_system.h
 
 	Components/position_component.h
 	Components/texture_component.h
 	Components/physics_component.h
+	Components/transform_component.h
 	Components/component.h
 	)
 
@@ -36,6 +39,7 @@ set (SRC
 	Systems/drawing_system.c
 	Systems/moving_system.c
 	Systems/event_system.c
+	Systems/transform_system.c
 	main.c
 	)
 add_executable(${PROJECT_NAME} main.c ${HDR} ${SRC})
