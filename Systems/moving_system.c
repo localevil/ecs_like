@@ -1,7 +1,6 @@
 #include "moving_system.h"
-#include <SDL2/SDL.h>
-
-#include <Components/component.h>
+#include <stdlib.h>
+#include "system.h"
 
 typedef struct {
 	position_comp_t *pos_comp;
@@ -9,7 +8,6 @@ typedef struct {
 } moving_node;
 
 typedef struct {
-	const uint8_t *keys;
 	float delta;
 	list_t *items;
 } moving_system_t;
@@ -18,39 +16,24 @@ static moving_system_t move_sys;
 
 static void moving_func(void *elm) {
 	moving_node *node = (moving_node *)elm;
-	if (node) {
-		vec2f duration = {0,0};
-		if (move_sys.keys[SDL_SCANCODE_LEFT] || move_sys.keys[SDL_SCANCODE_A])
-		{
-			duration.x -= 1;
-		}
-		if (move_sys.keys[SDL_SCANCODE_RIGHT] || move_sys.keys[SDL_SCANCODE_D])
-		{
-			duration.x += 1;
-		}
-		if (move_sys.keys[SDL_SCANCODE_UP] || move_sys.keys[SDL_SCANCODE_W])
-		{
-			duration.y -= 1;
-		}
-		if (move_sys.keys[SDL_SCANCODE_DOWN] || move_sys.keys[SDL_SCANCODE_S])
-		{
-			duration.y += 1;
-		}
+	if (node == NULL)
+		return;
 
-		vec2f norm_dur = vec2f_normalize(duration);
-		if(norm_dur.x < 0)
-			node->pos_comp->flip = true;
-		else if (norm_dur.x > 0)
-			node->pos_comp->flip = false;
+	vec2f duration = node->pos_comp->duration;
+	node->pos_comp->duration.x = 0;
+	node->pos_comp->duration.y = 0;
+	if(duration.x < 0)
+		node->pos_comp->flip = true;
+	else if (duration.x > 0)
+		node->pos_comp->flip = false;
 
-		node->pos_comp->center = vec2f_add(
-									vec2f_multiply_scalar(
-										vec2f_multiply(
-											norm_dur,
-											node->physics_comp->speed),
-										move_sys.delta),
-									node->pos_comp->center);
-	}
+	node->pos_comp->center = vec2f_add(
+								vec2f_multiply_scalar(
+									vec2f_multiply(
+										duration,
+										node->physics_comp->speed),
+									move_sys.delta),
+								node->pos_comp->center);
 }
 
 void moving_system(float delta) {
@@ -59,16 +42,8 @@ void moving_system(float delta) {
 }
 
 uint32_t init_moving_sustem() {
-	move_sys.keys = SDL_GetKeyboardState(NULL);
 	move_sys.items = l_create();
 	return 0;
-}
-
-static component_type type;
-
-static bool find_comp(void *data) {
-	component *comp = (component*)data;
-	return comp && comp->type == type;
 }
 
 void moving_sys_add_item(entity *en) {

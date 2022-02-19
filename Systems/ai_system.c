@@ -5,7 +5,7 @@
 #include <time.h>
 #include <stdio.h>
 
-#include <Components/component.h>
+#include "system.h"
 #include <List/list.h>
 
 typedef struct {
@@ -20,7 +20,7 @@ typedef struct {
 
 static ai_system_t ai_sys;
 
-static float frand(float min, float max){
+static float frand(float min, float max) {
 	static const __int_least8_t mult = 100;
 	int32_t r_min = min * mult;
 	int32_t r_max = max * mult;
@@ -29,39 +29,33 @@ static float frand(float min, float max){
 
 static void ai_func(void *elm) {
 	ai_node *node = (ai_node*)elm;
-	if (node) {
-		srand(time(NULL));
-		float r_min = -1;
-		float r_max = 1;
-		vec2f duration =  {
-			.x = frand(r_min, r_max),
-			.y = frand(r_min, r_max)
-		};
+	if (node == NULL)
+		return;
 
-		vec2f norm_dur = vec2f_normalize(duration);
-		if(norm_dur.x < 0)
-			node->pos_comp->flip = true;
-		else if (norm_dur.x > 0)
-			node->pos_comp->flip = false;
+	float r_min = -1;
+	float r_max = 1;
+	srand(time(NULL));
+	vec2f duration =  {
+		.x = frand(r_min, r_max),
+		.y = frand(r_min, r_max)
+	};
 
-		node->pos_comp->center = vec2f_add(vec2f_multiply_scalar(vec2f_multiply(
-											norm_dur,
-											node->physics_comp->speed),
-										ai_sys.delta),
-				  node->pos_comp->center);
-	}
+	vec2f norm_dur = vec2f_normalize(duration);
+	if(norm_dur.x < 0)
+		node->pos_comp->flip = true;
+	else if (norm_dur.x > 0)
+		node->pos_comp->flip = false;
+
+	node->pos_comp->center = vec2f_add(vec2f_multiply_scalar(vec2f_multiply(
+										norm_dur,
+										node->physics_comp->speed),
+									ai_sys.delta),
+				node->pos_comp->center);
 }
 
 void ai_system(float delta) {
 	ai_sys.delta = delta;
 	l_for_each(ai_sys.items, ai_func);
-}
-
-static component_type type;
-
-static bool find_comp(void *data) {
-	component *comp = (component*)data;
-	return comp && comp->type == type;
 }
 
 void ai_sys_add_item(entity *en) {
@@ -73,7 +67,7 @@ void ai_sys_add_item(entity *en) {
 	}
 	type = COMP_TYPE_PHYSICS;
 	component *physics = (component*)l_find(en->components, find_comp);
-	if(!pos) {
+	if(!physics) {
 		printf("Entity %s not have position component", en->name);
 		return;
 	}

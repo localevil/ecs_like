@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-#include <Components/component.h>
+#include "system.h"
 #include <List/list.h>
 
 typedef struct {
@@ -28,34 +28,35 @@ static drawing_system_t draw_sys;
 
 static void drawing_func(void *elm) {
 	drawing_node *node = (drawing_node *)elm;
-	if (node) {
-		SDL_Rect draw_rect;
-		vec2f left_top =
-				vec2f_subtract(node->pos_comp->center,
-								vec2f_divide_scalar(node->texture_comp->draw_size, 2));
-		draw_rect.x = left_top.x;
-		draw_rect.y = left_top.y;
-		//todo drawing component
-		draw_rect.w = node->texture_comp->draw_size.x;
-		draw_rect.h = node->texture_comp->draw_size.y;
-		if (node->texture_comp->texture == NULL) {
-			SDL_RenderFillRect(draw_sys.ren, &draw_rect);
-			return;
-		}
-		SDL_Rect texture_rect;
-		texture_rect.x = node->texture_comp->pos.x;
-		texture_rect.y = node->texture_comp->pos.y;
-		texture_rect.w = node->texture_comp->texture_size.x;
-		texture_rect.h = node->texture_comp->texture_size.y;
+	if (node == NULL) 
+		return;
 
-		SDL_RendererFlip flip = SDL_FLIP_NONE;
-		if(node->pos_comp->flip) {
-			flip = SDL_FLIP_HORIZONTAL;
-		}
-		SDL_RenderCopyEx(draw_sys.ren,
-						 (SDL_Texture*)node->texture_comp->texture,
-						 &texture_rect, &draw_rect, 0., NULL, flip);
+	SDL_Rect draw_rect;
+	vec2f left_top =
+			vec2f_subtract(node->pos_comp->center,
+							vec2f_divide_scalar(node->texture_comp->draw_size, 2));
+	draw_rect.x = left_top.x;
+	draw_rect.y = left_top.y;
+	//todo drawing component
+	draw_rect.w = node->texture_comp->draw_size.x;
+	draw_rect.h = node->texture_comp->draw_size.y;
+	if (node->texture_comp->texture == NULL) {
+		SDL_RenderFillRect(draw_sys.ren, &draw_rect);
+		return;
 	}
+	SDL_Rect texture_rect;
+	texture_rect.x = node->texture_comp->pos.x;
+	texture_rect.y = node->texture_comp->pos.y;
+	texture_rect.w = node->texture_comp->texture_size.x;
+	texture_rect.h = node->texture_comp->texture_size.y;
+
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	if(node->pos_comp->flip) {
+		flip = SDL_FLIP_HORIZONTAL;
+	}
+	SDL_RenderCopyEx(draw_sys.ren,
+						(SDL_Texture*)node->texture_comp->texture,
+						&texture_rect, &draw_rect, 0., NULL, flip);
 }
 
 void drawing_system() {
@@ -107,13 +108,6 @@ uint32_t init_drawing_system(uint32_t w, uint32_t h) {
 	draw_sys.items = l_create();
 	draw_sys.textures = l_create();
 	return 0;
-}
-
-static component_type type;
-
-static bool find_comp(void *data) {
-	component *comp = (component*)data;
-	return comp && comp->type == type;
 }
 
 void drawing_sys_add_item(entity *en) {

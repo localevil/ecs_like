@@ -19,6 +19,7 @@ set(LIBS
 set(HDR
 	Entitys/entity.h
 
+	Systems/system.h
 	Systems/collision_system.h
 	Systems/ai_system.h
 	Systems/drawing_system.h
@@ -34,6 +35,7 @@ set(HDR
 	)
 
 set (SRC
+	Systems/system.c
 	Systems/ai_system.c
 	Systems/collision_system.c
 	Systems/drawing_system.c

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Components/component.h"
+#include "system.h"
 
 typedef struct {
 	position_comp_t *pos_comp;
@@ -60,8 +60,7 @@ vec2f collision_depth(collision_node *n1, vec2f d1,
 
 void collision_system() {
 	for (uint32_t i = 0; i < collision_sys.size; i++) {
-		for (uint32_t j = i + 1;
-			j < collision_sys.size ; j++) {
+		for (uint32_t j = i + 1; j < collision_sys.size ; j++) {
 
 			collision_node *first = &collision_sys.items[i];
 			collision_node *second = &collision_sys.items[j];
@@ -77,31 +76,35 @@ void collision_system() {
 				vec2f min_dist = collision_depth(first, second_push_vector,
 												 second, first_push_vector);
 
-				vec2f real_dist =  vec2f_abs(
+				float real_dist = vec2f_module(vec2f_abs(
 							vec2f_subtract(first->pos_comp->center,
-										   second->pos_comp->center));
+										   second->pos_comp->center)));
 
-				vec2f dist_move = vec2f_subtract(min_dist, real_dist);
+				float dist_move_x = min_dist.x - real_dist;
+				float dist_move_y = min_dist.y - real_dist;
 
+				float dist_move = (dist_move_x < dist_move_y
+								   ? dist_move_x
+								   : dist_move_y) + 0.1;
 				if (first->physics_comp->type == PHYSIC_TYPE_STATIC)
 				{
 					second->pos_comp->center = vec2f_add(
-								vec2f_multiply(second_push_vector,
+								vec2f_multiply_scalar(second_push_vector,
 													  dist_move),
 								second->pos_comp->center);
 				} else if (second->physics_comp->type == PHYSIC_TYPE_STATIC) {
 					first->pos_comp->center = vec2f_add(
-								vec2f_multiply(first_push_vector,
+								vec2f_multiply_scalar(first_push_vector,
 													  dist_move),
 								first->pos_comp->center);
 				} else {
 					second->pos_comp->center = vec2f_add(
-								vec2f_multiply(second_push_vector,
-											   vec2f_divide_scalar(dist_move, 2)),
+								vec2f_multiply_scalar(second_push_vector,
+											   dist_move/ 2),
 								second->pos_comp->center);
 					first->pos_comp->center = vec2f_add(
-								vec2f_multiply(first_push_vector,
-											   vec2f_divide_scalar(dist_move, 2)),
+								vec2f_multiply_scalar(first_push_vector,
+											   dist_move / 2),
 								first->pos_comp->center);
 				}
 			}
@@ -116,13 +119,6 @@ uint32_t init_collision_system(uint32_t max) {
 	return 0;
 }
 
-static component_type type;
-
-static bool find_comp(void *data) {
-	component *comp = (component*)data;
-	return comp && comp->type == type;
-}
-
 void collision_sys_add_item(entity *en) {
 	type = COMP_TYPE_POS;
 	component *pos = (component*)l_find(en->components, find_comp);
@@ -132,7 +128,7 @@ void collision_sys_add_item(entity *en) {
 	}
 	type = COMP_TYPE_PHYSICS;
 	component *physics = (component*)l_find(en->components, find_comp);
-	if(!pos) {
+	if(!physics) {
 		printf("Entity %s not have physics component", en->name);
 		return;
 	}

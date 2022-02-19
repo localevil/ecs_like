@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "system.h"
+
 typedef struct {
 	position_comp_t *parent_pos_comp;
 	position_comp_t *trans_pos_comp;
@@ -17,27 +19,21 @@ static transform_system_t  trans_sys;
 
 static void transform_func(void* elm) {
 	transform_node *node = (transform_node*)elm;
-	if(node) {
-		vec2f (*trans_func)(vec2f,vec2f);
-		if (!node->parent_pos_comp->flip) {
-			trans_func = vec2f_add;
-		} else {
-			trans_func = vec2f_subtract;
-		}
-		node->trans_pos_comp->center = trans_func(node->parent_pos_comp->center,
-												  node->trans_comp->shift);
+	if(node == NULL) 
+		return;
+	
+	vec2f (*trans_func)(vec2f,vec2f);
+	if (!node->parent_pos_comp->flip) {
+		trans_func = vec2f_add;
+	} else {
+		trans_func = vec2f_subtract;
 	}
+	node->trans_pos_comp->center = trans_func(node->parent_pos_comp->center,
+												node->trans_comp->shift);
 }
 
 void transform_system() {
 	l_for_each(trans_sys.items, transform_func);
-}
-
-static component_type type;
-
-static bool find_comp(void *data) {
-	component *comp = (component*)data;
-	return comp && comp->type == type;
 }
 
 void transform_sys_add_item(entity *parent_en, entity *trans_en) {

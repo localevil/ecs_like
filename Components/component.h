@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Components/position_component.h"
-#include "Components/texture_component.h"
-#include "Components/physics_component.h"
-#include "Components/transform_component.h"
+#include "position_component.h"
+#include "texture_component.h"
+#include "physics_component.h"
+#include "transform_component.h"
 
 typedef enum {
 	COMP_TYPE_POS = 1,

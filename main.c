@@ -18,6 +18,7 @@ void init_systems() {
 	{
 		printf("drawing system has`t been created");
 	}
+	init_event_sustem();
 	init_moving_sustem();
 	init_ai_system();
 	init_moving_sustem();
@@ -26,6 +27,7 @@ void init_systems() {
 }
 
 void destroy_systems() {
+	destroy_event_system();
 	destroy_collison_system();
 	destroy_ai_system();
 	destroy_moving_system();
@@ -48,8 +50,8 @@ int main() {
 		.type = COMP_TYPE_PHYSICS,
 		.physics_comp = {
 			.type = PHYSIC_TYPE_DYNAMIC,
-			.speed = {.x = 100, .y = 100 },
-			.halfSize = {.x = 16, .y = 24}
+			.speed = {.x = 300, .y = 300 },
+			.halfSize = {.x = 16, .y = 32}
 		}
 	};
 	l_push(player.components, (void*)&player_physics_comp);
@@ -78,7 +80,7 @@ int main() {
 		.physics_comp = {
 			.type = PHYSIC_TYPE_DYNAMIC,
 			.speed = {.x = 50, .y = 50},
-			.halfSize = {.x = 16, .y = 24 }
+			.halfSize = {.x = 16, .y = 32 }
 		}
 	};
 	l_push(enemy.components, (void*)&enemy_physics_comp);
@@ -106,7 +108,7 @@ int main() {
 		.type = COMP_TYPE_TEXTURE,
 		.texture_comp = {
 			.texture = NULL,
-			.draw_size = {.x = 10, .y = 200 }
+			.draw_size = {.x = 40, .y = 200 }
 		}
 	};
 	l_push(wall.components, (void*)&wall_texture_comp);
@@ -116,7 +118,7 @@ int main() {
 		.physics_comp = {
 			.type = PHYSIC_TYPE_STATIC,
 			.speed = { .x = 0, .y = 0 },
-			.halfSize = { .x = 5, .y = 100}
+			.halfSize = { .x = 20, .y = 100}
 		}
 	};
 	l_push(wall.components, (void*)&wall_physics_comp);
@@ -143,6 +145,8 @@ int main() {
 		}
 	};
 	l_push(dot.components, (void*)&dot_texture_component);
+
+	event_sys_add_item(&player);
 
 	drawing_sys_add_item(&player);
 	drawing_sys_add_item(&enemy);
